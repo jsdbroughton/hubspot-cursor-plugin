@@ -13,8 +13,10 @@ Use the HubSpot MCP tools when the user wants to read or reason about HubSpot
 CRM data (contacts, companies, deals, tickets, quotes, products, and related
 objects). The remote HubSpot MCP server is read-only for those objects.
 
-Accounts in the EU data center use the `mcp-eu1.hubspot.com` MCP host; others
-may use `mcp.hubspot.com`. Match the host to the account region.
+The plugin connects to **`https://mcp.hubspot.com/`** so Cursor’s OAuth check matches
+HubSpot’s advertised protected resource. EU accounts may still use EU-specific
+**authorize** links in the HubSpot UI; do not assume a different MCP base URL in
+`mcp.json` unless HubSpot documents matching metadata for that host.
 
 ## Before you call tools
 
