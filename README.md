@@ -7,9 +7,9 @@ know how to use CRM tools safely.
 ## What you get
 
 - **CRM data (remote MCP)** — Connect to HubSpot’s hosted MCP (OAuth with
-  PKCE). This repo defaults to the **EU** MCP host; see below for the US host.
+PKCE). This repo defaults to the **EU** MCP host; see below for the US host.
 - **Skill** — `skills/hubspot-crm/SKILL.md` nudges the agent toward MCP tools
-  and sane query patterns.
+and sane query patterns.
 
 HubSpot also documents a **separate Developer MCP server** (local, CLI-driven)
 for building on the HubSpot developer platform. That is not configured here; see
@@ -48,14 +48,14 @@ Cursor calls after you have a valid token (or Cursor completes its own OAuth).
 
 1. A HubSpot account on the current developer platform.
 2. An **MCP Auth App** in HubSpot (**Development → MCP Auth Apps → Create MCP
-   auth app**).
+  auth app**).
 3. **Redirect URL(s)** in the app that **exactly** match your client. For a
-   custom OAuth bridge, that may be e.g.
+  custom OAuth bridge, that may be e.g.
    `http://localhost:3000/api/hubspot/oauth/callback` (with a server on that
    route to exchange the `code`). For Cursor-native MCP OAuth, register the
    redirect URI Cursor uses (see Cursor docs or any OAuth error details).
 4. For quick experiments with MCP Inspector, HubSpot’s docs mention callbacks
-   such as `http://localhost:6274/oauth/callback/debug`.
+  such as `http://localhost:6274/oauth/callback/debug`.
 
 ## Install in Cursor
 
@@ -95,16 +95,17 @@ hubspot-cursor-plugin/
 ## Security notes
 
 - Never commit **client secret** or tokens. **Client ID** is not a secret in the
-  OAuth sense but avoid pasting it into public places if you can help it.
+OAuth sense but avoid pasting it into public places if you can help it.
 - OAuth credentials belong in HubSpot’s app settings and in Cursor’s secure MCP
-  auth flow — not in git.
+auth flow — not in git.
 - CRM access follows the installing user’s HubSpot permissions and the scopes
-  granted at install time.
+granted at install time.
 
 ## Next steps you might add
 
 - Extra skills (e.g. “summarize pipeline”, “prep for call with company X”).
 - A second MCP entry for the **Developer** MCP if you live in `hs` CLI
-  workflows.
+workflows.
 - `assets/logo.png` and a `logo` field in `plugin.json` if you publish to a
-  marketplace.
+marketplace.
+
