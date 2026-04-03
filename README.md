@@ -83,10 +83,53 @@ After install, connect **HubSpot MCP** under MCP / Tools settings and complete
 OAuth when prompted, using your MCP Auth App’s **client ID** and **client
 secret** as your Cursor version requires.
 
+If you see **“does not support dynamic client registration”** in the MCP logs,
+see [Troubleshooting: Dynamic client registration](#troubleshooting-dynamic-client-registration)
+below—that case is separate from PKCE or redirect URL mistakes.
+
 Exact OAuth field names in Cursor’s UI can change; if connection fails, confirm
 PKCE is in use and redirect URLs match HubSpot’s app settings. HubSpot’s
 guide:
 [Integrate with the remote HubSpot MCP server](https://developers.hubspot.com/docs/apps/developer-platform/build-apps/integrate-with-the-remote-hubspot-mcp-server).
+
+## Troubleshooting: Dynamic client registration
+
+### Symptom
+
+MCP logs show something like:
+
+`Incompatible auth server: does not support dynamic client registration`
+
+### What it means
+
+**Cursor’s** remote MCP OAuth path expects **OAuth Dynamic Client Registration
+(DCR)**. On connect, the client discovers the authorization server and tries to
+**register itself** automatically (runtime client registration).
+
+**HubSpot’s** [MCP Auth App](https://developers.hubspot.com/docs/apps/developer-platform/build-apps/integrate-with-the-remote-hubspot-mcp-server)
+model is a **pre-registered** OAuth client: you create the app in HubSpot and
+use a fixed **client ID** (and **client secret** where applicable). HubSpot’s
+authorization server does **not** expose DCR in the way Cursor’s MCP client
+requires here, so the handshake stops with the error above.
+
+That is a **product interoperability gap**, not a bad redirect URL or wrong
+`mcp.json` host (once you already fixed the `mcp.hubspot.com` vs `mcp-eu1`
+metadata mismatch).
+
+### What you can do
+
+1. **Report / follow up** — Cursor (forum or support) and HubSpot (developer
+   support or community) need demand for **static MCP OAuth clients** (or DCR on
+   HubSpot’s side) so this combination works in the IDE.
+2. **Validate HubSpot MCP elsewhere** — Use a client HubSpot documents for MCP
+   (e.g. MCP Inspector in their guide) to confirm your MCP Auth App and account
+   work outside Cursor.
+3. **CRM access inside Cursor today** — Use a **different** integration path:
+   add a **stdio** MCP server in **`~/.cursor/mcp.json`** that calls the HubSpot
+   **CRM APIs** with a **private app access token** (or another server’s OAuth
+   flow that does not rely on Cursor’s DCR-only path). That is **not** the same
+   as HubSpot’s hosted remote MCP tools surface; it is a practical workaround
+   until Cursor and HubSpot align on OAuth for remote MCP.
 
 ## Project layout
 
