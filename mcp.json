@@ -1,6 +1,6 @@
 {
   "hubspot": {
-    "url": "https://mcp-eu1.hubspot.com/",
+    "url": "https://mcp.hubspot.com/",
     "transport": "http"
   }
 }

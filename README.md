@@ -7,55 +7,64 @@ know how to use CRM tools safely.
 ## What you get
 
 - **CRM data (remote MCP)** — Connect to HubSpot’s hosted MCP (OAuth with
-PKCE). This repo defaults to the **EU** MCP host; see below for the US host.
+  PKCE). `mcp.json` uses **`https://mcp.hubspot.com/`** so OAuth metadata matches
+  what Cursor expects (see below).
 - **Skill** — `skills/hubspot-crm/SKILL.md` nudges the agent toward MCP tools
-and sane query patterns.
+  and sane query patterns.
 
 HubSpot also documents a **separate Developer MCP server** (local, CLI-driven)
 for building on the HubSpot developer platform. That is not configured here; see
 [Developer MCP server](https://developers.hubspot.com/docs/developer-tooling/local-development/mcp-server)
 if you need it.
 
-## Regional MCP hosts
+## Why `mcp.hubspot.com` in `mcp.json` (not `mcp-eu1`)
 
-Use the MCP base URL that matches where the HubSpot account lives:
+HubSpot’s OAuth **protected resource metadata** identifies the resource as
+**`https://mcp.hubspot.com`**. Cursor verifies that the MCP URL you configure
+**matches that origin**. If `mcp.json` uses e.g. **`https://mcp-eu1.hubspot.com/`**
+while metadata still says **`mcp.hubspot.com`**, Cursor fails with:
 
-- **EU (example: `mcp-eu1.hubspot.com`)** — `https://mcp-eu1.hubspot.com/` (set
-in `mcp.json` in this repo)
-- **US / default** — `https://mcp.hubspot.com/`
+`Protected resource https://mcp.hubspot.com does not match expected https://mcp-eu1.hubspot.com/`
 
-OAuth authorize URLs in the HubSpot UI use the same region (for example
-`https://mcp-eu1.hubspot.com/oauth/authorize/user?...`).
+So this plugin keeps **`https://mcp.hubspot.com/`** even for **EU** HubSpot
+accounts, until HubSpot advertises a consistent EU origin in that metadata.
 
-## Authorization URL vs MCP URL
+## EU vs global in the HubSpot UI
 
-The **Installation URL Builder** in HubSpot produces an **authorize** link, for
-example:
+The **Installation URL Builder** may show a **region-specific** authorize URL,
+for example:
 
 `https://mcp-eu1.hubspot.com/oauth/authorize/user?client_id=...&redirect_uri=...`
 
-That link starts the **browser OAuth** flow. After the user approves, HubSpot
-redirects to your **Redirect URL** (e.g.
+That is for the **browser OAuth** install flow. It does **not** mean you should
+set the **MCP stream** URL in Cursor to `mcp-eu1` if that triggers the mismatch
+error above.
+
+## Authorization URL vs MCP URL
+
+The **authorize** link starts the **browser OAuth** flow. After the user
+approves, HubSpot redirects to your **Redirect URL** (e.g.
 `http://localhost:3000/api/hubspot/oauth/callback`) with an authorization
 `code`. A real install must also use **PKCE** (`code_challenge` / verifier),
 as HubSpot states in the UI—do not treat the bare authorize link as a complete
 production flow unless your client adds PKCE per their docs.
 
-The **MCP** URL in `mcp.json` is different: it is the **MCP server** endpoint
-Cursor calls after you have a valid token (or Cursor completes its own OAuth).
+The **MCP** URL in `mcp.json` is the **streamable HTTP** endpoint Cursor uses
+after OAuth; it must stay aligned with HubSpot’s **protected resource** metadata
+for Cursor’s client.
 
 ## Prerequisites
 
 1. A HubSpot account on the current developer platform.
 2. An **MCP Auth App** in HubSpot (**Development → MCP Auth Apps → Create MCP
-  auth app**).
+   auth app**).
 3. **Redirect URL(s)** in the app that **exactly** match your client. For a
-  custom OAuth bridge, that may be e.g.
+   custom OAuth bridge, that may be e.g.
    `http://localhost:3000/api/hubspot/oauth/callback` (with a server on that
    route to exchange the `code`). For Cursor-native MCP OAuth, register the
    redirect URI Cursor uses (see Cursor docs or any OAuth error details).
 4. For quick experiments with MCP Inspector, HubSpot’s docs mention callbacks
-  such as `http://localhost:6274/oauth/callback/debug`.
+   such as `http://localhost:6274/oauth/callback/debug`.
 
 ## Install in Cursor
 
@@ -95,17 +104,16 @@ hubspot-cursor-plugin/
 ## Security notes
 
 - Never commit **client secret** or tokens. **Client ID** is not a secret in the
-OAuth sense but avoid pasting it into public places if you can help it.
+  OAuth sense but avoid pasting it into public places if you can help it.
 - OAuth credentials belong in HubSpot’s app settings and in Cursor’s secure MCP
-auth flow — not in git.
+  auth flow — not in git.
 - CRM access follows the installing user’s HubSpot permissions and the scopes
-granted at install time.
+  granted at install time.
 
 ## Next steps you might add
 
 - Extra skills (e.g. “summarize pipeline”, “prep for call with company X”).
 - A second MCP entry for the **Developer** MCP if you live in `hs` CLI
-workflows.
+  workflows.
 - `assets/logo.png` and a `logo` field in `plugin.json` if you publish to a
-marketplace.
-
+  marketplace.
