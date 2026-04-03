@@ -1,0 +1,10 @@
+{
+  "name": "hubspot-cursor-plugin",
+  "version": "0.1.0",
+  "description": "HubSpot CRM context via HubSpot's remote MCP server, plus skills for common workflows.",
+  "repository": "https://github.com/jsdbroughton/hubspot-cursor-plugin",
+  "author": {
+    "name": "Jonathon Broughton"
+  },
+  "keywords": ["hubspot", "crm", "sales", "mcp", "deals", "contacts"]
+}
